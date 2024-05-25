@@ -1,0 +1,20 @@
+---
+
+networks:
+  plantee:
+
+services:
+  # plantee-db:
+  #   image: postgres:latest
+  #   restart: unless-stopped
+  #   volumes:
+  #     - "./db:/var/lib/postgresql/data"
+  #   networks:
+  #     - plantee
+  #   env_file:
+  #   - .env
+  plantee:
+    build: .
+    networks:
+      - plantee
+    restart: unless-stopped
