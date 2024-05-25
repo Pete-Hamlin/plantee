@@ -16,7 +16,7 @@ services:
   plantee:
     build: .
     ports:
-      - 4000:4000
+      - 8000:8000
     networks:
       - plantee
     restart: unless-stopped
