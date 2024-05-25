@@ -1,86 +1,43 @@
 import { Handlers } from "$fresh/server.ts";
 
-const EXAMPLE_ISC = `
+const ICS_TEMPLATE = (VEVENTS) => `
 BEGIN:VCALENDAR
-METHOD:REQUEST
-PRODID:Microsoft Exchange Server 2010
 VERSION:2.0
-BEGIN:VTIMEZONE
-TZID:GMT Standard Time
-BEGIN:STANDARD
-DTSTART:16010101T020000
-TZOFFSETFROM:+0100
-TZOFFSETTO:+0000
-RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=10
-END:STANDARD
-BEGIN:DAYLIGHT
-DTSTART:16010101T010000
-TZOFFSETFROM:+0000
-TZOFFSETTO:+0100
-RRULE:FREQ=YEARLY;INTERVAL=1;BYDAY=-1SU;BYMONTH=3
-END:DAYLIGHT
-END:VTIMEZONE
-BEGIN:VEVENT
-ORGANIZER;CN=Daniel Martinho-Corbishley:mailto:daniel@AuraVisionLabsLTD.onm
- icrosoft.com
-ATTENDEE;ROLE=REQ-PARTICIPANT;PARTSTAT=NEEDS-ACTION;RSVP=TRUE;CN=danielc650
- 3@gmail.com:mailto:danielc6503@gmail.com
-DESCRIPTION;LANGUAGE=en-GB:PLANTEEEEEEEEEEEE
-UID:040000008200E00074C5B7101A82E00800000000BE4EA5AEC8AEDA01000000000000000
- 010000000B335BA9663D79840B2645DAB3652F8AC
-SUMMARY;LANGUAGE=en-GB:plant care PLANTEEEEEEEEEEEE
-DTSTART;TZID=GMT Standard Time:20240525T190000
-DTEND;TZID=GMT Standard Time:20240525T193000
-CLASS:PUBLIC
-PRIORITY:5
-DTSTAMP:20240525T172834Z
-TRANSP:OPAQUE
-STATUS:CONFIRMED
-SEQUENCE:0
-LOCATION;LANGUAGE=en-GB:Microsoft Teams Meeting
-X-MICROSOFT-CDO-APPT-SEQUENCE:0
-X-MICROSOFT-CDO-OWNERAPPTID:2122697662
-X-MICROSOFT-CDO-BUSYSTATUS:TENTATIVE
-X-MICROSOFT-CDO-INTENDEDSTATUS:BUSY
-X-MICROSOFT-CDO-ALLDAYEVENT:FALSE
-X-MICROSOFT-CDO-IMPORTANCE:1
-X-MICROSOFT-CDO-INSTTYPE:0
-X-MICROSOFT-ONLINEMEETINGINFORMATION:{"OnlineMeetingChannelId":null\,"Onlin
- eMeetingProvider":3}
-X-MICROSOFT-SKYPETEAMSMEETINGURL:https://teams.microsoft.com/l/meetup-join/
- 19%3ameeting_ZTg5NGY4MTYtOTEyYy00MTk3LTgzN2EtYWFmMzQ2ZDYzYjkx%40thread.v2/
- 0?context=%7b%22Tid%22%3a%22e461ea44-5ff7-4bed-a0e2-aa6043f01866%22%2c%22O
- id%22%3a%22a7b1a882-dd2e-42e6-80de-f8b9a3deab0b%22%7d
-X-MICROSOFT-SCHEDULINGSERVICEUPDATEURL:https://api.scheduler.teams.microsof
- t.com/teams/e461ea44-5ff7-4bed-a0e2-aa6043f01866/a7b1a882-dd2e-42e6-80de-f
- 8b9a3deab0b/19_meeting_ZTg5NGY4MTYtOTEyYy00MTk3LTgzN2EtYWFmMzQ2ZDYzYjkx@th
- read.v2/0
-X-MICROSOFT-SKYPETEAMSPROPERTIES:{"cid":"19:meeting_ZTg5NGY4MTYtOTEyYy00MTk
- 3LTgzN2EtYWFmMzQ2ZDYzYjkx@thread.v2"\,"rid":0\,"mid":0\,"uid":null\,"priva
- te":true\,"type":0}
-X-MICROSOFT-DONOTFORWARDMEETING:FALSE
-X-MICROSOFT-DISALLOW-COUNTER:FALSE
-X-MICROSOFT-REQUESTEDATTENDANCEMODE:DEFAULT
-X-MICROSOFT-ISRESPONSEREQUESTED:TRUE
-X-MICROSOFT-LOCATIONDISPLAYNAME:Microsoft Teams Meeting
-X-MICROSOFT-LOCATIONSOURCE:None
-X-MICROSOFT-LOCATIONS:[{"DisplayName":"Microsoft Teams Meeting"\,"LocationA
- nnotation":""\,"LocationUri":""\,"LocationStreet":""\,"LocationCity":""\,"
- LocationState":""\,"LocationCountry":""\,"LocationPostalCode":""\,"Locatio
- nFullAddress":""}]
-BEGIN:VALARM
-DESCRIPTION:REMINDER
-TRIGGER;RELATED=START:-PT15M
-ACTION:DISPLAY
-END:VALARM
-END:VEVENT
+PRODID:Plantee v1.0
+${VEVENTS}
 END:VCALENDAR
 `;
+
+const VEVENT_TEMPLATE = (UUID, DTSTART, DTEND) => `
+BEGIN:VEVENT
+UID:plantee-day1-${UUID}
+DTSTAMP:${DTSTART}
+ORGANIZER;CN=John Doe:MAILTO:john.doe@example.com
+DTSTART:${DTSTART}
+DTEND:${DTEND}
+SUMMARY:Bastille Day Party
+GEO:48.85299;2.36885
+END:VEVENT
+`
+
+const tz_string = (date) => String(date.getFullYear()) + String(date.getMonth() + 1).padStart(2, '0') + String(date.getDate()).padStart(2, '0') + 'T' + String(date.getHours()).padStart(2, '0') + String(date.getMinutes()).padStart(2, '0') + String(date.getSeconds()).padStart(2, '0') + 'Z';
 
 export const handler: Handlers = {
   GET(_req) {
     const uuid = crypto.randomUUID();
-    return new Response(EXAMPLE_ISC, {
+    const date = new Date();
+    // console.log(date)
+    const dtstart = tz_string(date)
+    // console.log(dtstart)
+    date.setHours(date.getHours() + 2)
+    const dtend = tz_string(date)
+    // console.log(dtend)
+
+    const vevents = VEVENT_TEMPLATE(uuid, dtstart, dtend)
+
+    const ics_text = ICS_TEMPLATE(vevents)
+
+    return new Response(ics_text, {
       headers: { "Content-Type": "text/calendar" },
     });
   },
