@@ -7,5 +7,7 @@
 
 # Fresh build directory
 _fresh/
+# Local db directory
+_data/
 # npm dependencies
 node_modules/

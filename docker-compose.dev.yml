@@ -1,0 +1,13 @@
+---
+# Just run db locally
+
+services:
+  plantee-db:
+    image: postgres:latest
+    restart: unless-stopped
+    ports:
+      - 5432:5432
+    volumes:
+      - "./_data:/var/lib/postgresql/data"
+    env_file:
+    - .env
