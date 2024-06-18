@@ -29,6 +29,9 @@
     "@preact/signals-core": "https://esm.sh/*@preact/signals-core@1.5.1",
     "$std/": "https://deno.land/std@0.224.0/",
     "$migrate": "https://deno.land/x/migrate@0.2.5/postgres.ts",
+    "components/": "./components/",
+    "routes/": "./routes/",
+    "islands/": "./islands/"
   },
   "compilerOptions": {
     "jsx": "react-jsx",
