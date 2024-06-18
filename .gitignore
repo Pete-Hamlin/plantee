@@ -11,3 +11,4 @@ _fresh/
 _data/
 # npm dependencies
 node_modules/
+fresh.gen.ts
